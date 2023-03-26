@@ -1,0 +1,164 @@
+(a+b)-(c+d)
+
+
+
+/**
+     * Grammar:
+     * Expr ::= Expr [binary operator] Expr
+     *          +/- Expr
+     *          ( Expr )
+     *          Term
+     * Term ::= var | number
+     */
+
+
+
+
+lexerTable.set(Config.BITWISE_NOT, symbolTable.getOperator(TokenType.BITWISE_NOT.name()));
+            lexerTable.set(Config.BITWISE_AND, symbolTable.getOperator(TokenType.BITWISE_AND.name()));
+            lexerTable.set(Config.BITWISE_OR, symbolTable.getOperator(TokenType.BITWISE_OR.name()));
+            lexerTable.set(Config.LOGICAL_NOT, symbolTable.getOperator(TokenType.LOGICAL_NOT.name()));
+            lexerTable.set(Config.LOGICAL_AND, symbolTable.getOperator(TokenType.LOGICAL_AND.name()));
+            lexerTable.set(Config.LOGICAL_OR, symbolTable.getOperator(TokenType.LOGICAL_OR.name()));
+            lexerTable.set(Config.DOT, symbolTable.getOperator(TokenType.DOT.name()));
+            lexerTable.set(Config.COLON, symbolTable.getOperator(TokenType.COLON.name()));
+            lexerTable.set(Config.LPAREN, symbolTable.getOperator(TokenType.LPAREN.name()));
+            lexerTable.set(Config.RPAREN, symbolTable.getOperator(TokenType.RPAREN.name()));
+		lexerTable.set(Config.ASSIGNMENT, symbolTable.getOperator(TokenType.ASSIGNMENT.name()));
+            lexerTable.set(Config.EQ, symbolTable.getOperator(TokenType.EQ.name()));
+
+
+
+
+
+
+
+symbolTable.set(new OperatorInfo(TokenType.BITWISE_NOT, 1, true, OperatorType.UNARY));
+            symbolTable.set(new OperatorInfo(TokenType.BITWISE_AND, 1, true, OperatorType.BINARY));
+            symbolTable.set(new OperatorInfo(TokenType.BITWISE_OR, 1, true, OperatorType.BINARY));
+            symbolTable.set(new OperatorInfo(TokenType.LOGICAL_NOT, 1, true, OperatorType.UNARY));
+            symbolTable.set(new OperatorInfo(TokenType.LOGICAL_AND, 1, true, OperatorType.BINARY));
+            symbolTable.set(new OperatorInfo(TokenType.LOGICAL_OR, 1, true, OperatorType.BINARY));
+            symbolTable.set(new OperatorInfo(TokenType.DOT, 0, true, OperatorType.BINARY));
+            symbolTable.set(new OperatorInfo(TokenType.COLON, 0, true, OperatorType.BINARY));
+            symbolTable.set(new OperatorInfo(TokenType.LPAREN, 0, true, OperatorType.NONE));
+            symbolTable.set(new OperatorInfo(TokenType.RPAREN, 0, true, OperatorType.NONE));
+
+
+
+1
+4
+60 20 40 50
+0 1 1 2
+
+
+
+fun = [None for j in range(0, self.n)]
+        for i in range(0, self.n):
+            fun[i] = [0 for j in range(self.nodes[i].n_in)]
+            fun[i][len(fun[i]) - 1] = self.nodes[i].data
+            heapify(fun[i])
+        post = self.toposort()
+        for v in post:
+            s = 0
+            for j in fun[v]:
+                s += j
+            for u in self.nodes[v].edges:
+                heappush(fun[u], s)
+                heappop(fun[u])
+        s = 0
+        for i in fun[0]:
+            s += i
+        return s
+
+
+
+post = self.toposort()
+        print(post)
+        return 0
+
+
+
+
+
+
+
+
+from heapq import heapify, heappush, heappop
+
+class Node:
+    def __init__(self) -> None:
+        self.n_in = 0
+        self.data = 0
+        self.edges: list[int] = []
+
+
+class Graph:
+    def __init__(self, n) -> None:
+        self.nodes = [Node() for i in range(0, n)]
+        self.n = n
+
+    def add_edge(self, u: int, v: int):
+        self.nodes[u].edges.append(v)
+        self.nodes[v].n_in += 1
+
+    def dfs(self, v: int, visited: list[bool], post: list[int]):
+        visited[v] = True
+        for u in self.nodes[v].edges:
+            if not visited[u]:
+                self.dfs(u, visited, post)
+        post.append(v)
+
+    def toposort(self) -> list[int]:
+        visited = [False for i in range(0, self.n)]
+        post = []
+        for i in range(0, self.n):
+            if not visited[i]:
+                self.dfs(i, visited, post)
+        post.reverse()
+        return post
+
+    def get_max_fun(self):
+        fun = [None for j in range(0, self.n)]
+        for i in range(0, self.n):
+            fun[i] = [0 for j in range(self.nodes[i].n_in - 1)]
+            fun[i].append(self.nodes[i].data)
+            heapify(fun[i])
+        post = self.toposort()
+        for v in post:
+            s = 0
+            for j in fun[v]:
+                s += j
+            for u in self.nodes[v].edges:
+                heappush(fun[u], s)
+                heappop(fun[u])
+        s = 0
+        for i in fun[0]:
+            s += i
+        return s
+
+
+class Solution:
+    def __init__(self) -> None:
+        pass
+
+    def solve(self):
+        self.t = int(input())
+        for i in range(self.t):
+            # Create graph
+            n = int(input())
+            line = input().split()
+            g = Graph(n + 1)
+            g.nodes[0].data = 0
+            for j in range(len(line)):
+                g.nodes[j + 1].data = int(line[j])
+            # Add edges
+            line = input().split()
+            for j in range(len(line)):
+                g.add_edge(j + 1, int(line[j]))
+            fun = g.get_max_fun()
+            print("Case #{}: {}".format(i + 1, fun))
+
+
+sol = Solution()
+sol.solve()
